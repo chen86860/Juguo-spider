@@ -1,0 +1,31 @@
+{
+  "name": "Juguo-Splider",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel src/index.html"
+  },
+  "dependencies": {
+    "@antv/data-set": "^0.9.6",
+    "@antv/g2": "^3.2.7",
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "isomorphic-unfetch": "^2.1.1",
+    "koa": "^2.5.3",
+    "koa-body": "^4.0.4",
+    "koa-router": "^7.4.0",
+    "mongodb": "^3.1.4",
+    "mongoose": "^5.2.14",
+    "next": "^6.1.2",
+    "preact": "^8.3.1",
+    "preact-compat": "^3.18.4",
+    "react": "^16.5.1",
+    "react-dom": "^16.5.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-preact": "^1.1.0"
+  }
+}
