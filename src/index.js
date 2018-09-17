@@ -12,7 +12,7 @@ class App extends Component {
     }
   }
   componentDidMount() {
-    http.get('http://localhost:3001').then(res => {
+    http.get('http://116.196.110.78:3001').then(res => {
       const list = res.data
       this.setState({
         list,
