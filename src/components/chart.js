@@ -1,115 +1,98 @@
-import { h, render, Component } from 'preact'
+import React, { Component } from 'react'
 import G2 from '@antv/g2'
 import DataSet from '@antv/data-set'
+import './chart.scss'
 
 export default class Chart extends Component {
-  componentDidMount() {
-    // 在一行中保存多个城市的数据，需要将数据转换成
-    // {month: 'Jan', city: 'Tokyo', temperature: 3.9}
-    var data = [
-      {
-        month: 'Jan',
-        Tokyo: 7.0,
-        London: 3.9,
-      },
-      {
-        month: 'Feb',
-        Tokyo: 6.9,
-        London: 4.2,
-      },
-      {
-        month: 'Mar',
-        Tokyo: 9.5,
-        London: 5.7,
-      },
-      {
-        month: 'Apr',
-        Tokyo: 14.5,
-        London: 8.5,
-      },
-      {
-        month: 'May',
-        Tokyo: 18.4,
-        London: 11.9,
-      },
-      {
-        month: 'Jun',
-        Tokyo: 21.5,
-        London: 15.2,
-      },
-      {
-        month: 'Jul',
-        Tokyo: 25.2,
-        London: 17.0,
-      },
-      {
-        month: 'Aug',
-        Tokyo: 26.5,
-        London: 16.6,
-      },
-      {
-        month: 'Sep',
-        Tokyo: 23.3,
-        London: 14.2,
-      },
-      {
-        month: 'Oct',
-        Tokyo: 18.3,
-        London: 10.3,
-      },
-      {
-        month: 'Nov',
-        Tokyo: 13.9,
-        London: 6.6,
-      },
-      {
-        month: 'Dec',
-        Tokyo: 9.6,
-        London: 4.8,
-      },
-    ]
-    var ds = new DataSet()
-    var dv = ds.createView().source(data)
-    // fold 方式完成了行列转换，如果不想使用 DataSet 直接手工转换数据即可
-    dv.transform({
-      type: 'fold',
-      fields: ['Tokyo', 'London'], // 展开字段集
-      key: 'city', // key字段
-      value: 'temperature', // value字段
+  constructor(props) {
+    super(props)
+    this.state = {
+      list: [],
+    }
+    this.chartContainer = React.createRef()
+  }
+  static getDerivedStateFromProps(prevProps, prevState) {
+    const { list } = prevProps
+    if (Array.isArray(list) && list.length > 0) {
+      return {
+        ...prevState,
+        list,
+      }
+    }
+    return null
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const { list } = this.state
+    if (Array.isArray(list) && list.length > 0) {
+      this.handelRenderChart(list)
+    }
+  }
+  processData = data => {
+    const arr = data.map(item => {
+      let innerArr = {}
+      // the key of id is date
+      innerArr['date'] = item.id
+      item.data.forEach(roomItem => {
+        innerArr[roomItem.id] = parseFloat(roomItem.price)
+      })
+      return innerArr
     })
 
-    var chart = new G2.Chart({
-      container: 'modal',
-      forceFit: true,
-      height: window.innerHeight,
+    return arr
+  }
+  handelRenderChart = data => {
+    const formatedData = this.processData(data)
+    const fields = [...new Set(...formatedData.map(item => Object.keys(item)))].filter(
+      item => item !== 'date'
+    )
+    const ds = new DataSet()
+    const dv = ds.createView().source(formatedData)
+    dv.transform({
+      type: 'fold',
+      fields, // 展开字段集
+      key: 'roomId', // key字段
+      value: 'price', // value字段
+      retains: ['date'],
     })
-    console.log('dv', dv)
+    const container = this.chartContainer.current
+    var chart = new G2.Chart({
+      container,
+      forceFit: true,
+      height: window.innerHeight / 2,
+    })
     chart.source(dv, {
-      month: {
+      date: {
         range: [0, 1],
       },
     })
-    // chart.tooltip({
-    //   crosshairs: {
-    //     type: 'line',
-    //   },
-    // })
-    chart.axis('temperature', {
+    chart.tooltip({
+      crosshairs: {
+        type: 'x',
+      },
+    })
+    chart.axis('price', {
       label: {
         formatter: function formatter(val) {
-          return val + '°C'
+          return '￥' + val
+        },
+      },
+    })
+    chart.axis('date', {
+      label: {
+        formatter: function formatter(val) {
+          return new Date(parseInt(val)).toLocaleString()
         },
       },
     })
     chart
       .line()
-      .position('month*temperature')
-      .color('city')
+      .position('date*price')
+      .color('roomId')
       .shape('smooth')
     chart
       .point()
-      .position('month*temperature')
-      .color('city')
+      .position('date*price')
+      .color('roomId')
       .size(4)
       .shape('circle')
       .style({
@@ -120,6 +103,10 @@ export default class Chart extends Component {
   }
 
   render() {
-    return null
+    return (
+      <div className="chartWrap">
+        <div ref={this.chartContainer} />
+      </div>
+    )
   }
 }

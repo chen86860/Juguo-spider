@@ -3,9 +3,11 @@
 # dependencies
 /node_modules
 /build
+/config
 
 # testing
 /coverage
+.cache
 
 # production
 
