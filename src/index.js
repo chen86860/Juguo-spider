@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Chart from './components/chart'
-import http from './base/http'
+import { fetchList } from './services'
 import './assets/style.scss'
 
 class App extends Component {
@@ -12,9 +12,8 @@ class App extends Component {
     }
   }
   componentDidMount() {
-    http.get('http://localhost:3002').then(res => {
+    fetchList().then(res => {
       const list = res.data
-      console.log('list', list)
       this.setState({
         list,
       })

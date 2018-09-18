@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const Juguo = require('./../model/Juguo')
 const util = require('./../base')
+
 const http = util.http
 
 let $ = null
