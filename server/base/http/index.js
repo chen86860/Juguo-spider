@@ -26,17 +26,10 @@ class Http {
       }
       axios(opts)
         .then(res => {
-          const resp = res.data
-          if (resp.code && resp.code === 200) {
-            resolve(resp.data)
-          } else {
-            reject(resp)
-            console.err('http err,', resp)
-          }
+          resolve(res)
         })
         .catch(err => {
           reject(err)
-          console.err('http err,', res)
         })
     })
   }
